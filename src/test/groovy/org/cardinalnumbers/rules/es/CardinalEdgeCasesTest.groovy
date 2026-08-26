@@ -54,7 +54,10 @@ class CardinalEdgeCasesTest {
     void standaloneUnitsAndTeensAndTens() {
         assertEquals("cero", words("0"))
         assertEquals("uno", words("1"))
-        assertEquals("dieciseis", words("16"))
+        assertEquals("dieciséis", words("16"))
+        assertEquals("veintidós", words("22"))
+        assertEquals("veintitrés", words("23"))
+        assertEquals("veintiséis", words("26"))
         assertEquals("veintiuno", words("21"), "standalone 21 stays 'veintiuno' (no apocope)")
         assertEquals("treinta y uno", words("31"))
     }

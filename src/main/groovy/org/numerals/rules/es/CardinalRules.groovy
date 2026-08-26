@@ -39,6 +39,10 @@ class CardinalRules {
 	private static final Map unidades = [0:"cero", 1:"uno", 2:"dos",3:"tres",4:"cuatro",5:"cinco",6:"seis",7:"siete",8:"ocho",9:"nueve"]
 	private static final Map decenas = [1:"diez", 2:"veinte",3:"treinta",4:"cuarenta",5:"cincuenta",6:"sesenta",7:"setenta",8:"ochenta",9:"noventa"]
 	private static final Map decenasEspeciales = [1:"dieci",2:"veinti"]
+	// Formas contraidas que llevan tilde por ser agudas terminadas en vocal/-s:
+	// dieciseis->dieciséis, veintidos->veintidós, veintitres->veintitrés, veintiseis->veintiséis.
+	// Solo aplican al COMPONER con dieci-/veinti-; en aislado dos/tres/seis no llevan tilde.
+	private static final Map unidadesContraidas = [2:"d\u00F3s",3:"tr\u00E9s",6:"s\u00E9is"]
 	private static final Map decenasEspecialesUno = [1:"once",2:"doce",3:"trece",4:"catorce",5:"quince"]
 	private static final Map centenasEspeciales = [1:"cien${SEPARADOR_REGLAS}ciento",5:"quinientos",7:"setecientos",9:"novecientos"]
 	private static final List sufijos = [
@@ -76,6 +80,15 @@ class CardinalRules {
 			throw new MissingResourceException("Cannot found class suffix for position:$posicion", CardinalRules.class.name, "getSufijo")
 		}
 		return sufijosTmp
+	}
+
+	/**
+	 * Devuelve la forma contraida (con tilde) de una unidad para componer con
+	 * dieci-/veinti- (dieciséis, veintidós, veintitrés, veintiséis llevan tilde),
+	 * o la forma normal si no aplica.
+	 */
+	private static String unidadContraida(int digito) {
+		return unidadesContraidas.containsKey(digito)?unidadesContraidas[digito]:unidades[digito]
 	}
 
 	/**
@@ -126,13 +139,13 @@ class CardinalRules {
 						case 1..5: cardinal = decenasEspecialesUno[number[-1]]
 							break
 						default:
-							cardinal = "${decenasEspeciales[digit]}${getCardinal(number[-1..-1])}"
+							cardinal = "${decenasEspeciales[digit]}${unidadContraida(number[-1])}"
 					}
 					return cardinal
 				}
 					break
 				case 2: rulesDecenas[digit] = { number, getCardinal ->
-					number[-1] == 0?decenas[digit]:"${decenasEspeciales[digit]}${getCardinal(number[-1..-1])}"
+					number[-1] == 0?decenas[digit]:"${decenasEspeciales[digit]}${unidadContraida(number[-1])}"
 				}
 					break
 				default: rulesDecenas[digit] = { number, getCardinal ->
